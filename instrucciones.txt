@@ -1,0 +1,8 @@
+--- 
+Desarrolla un proyecto html, js, css con tailwid
+
+Esta aplicacion es para capturar aniames sueltos en un mapa y atraparlos para llevarlos al zoologico, es una aplicacion educactiva que me ayudara en entender mejor el mundo de los animales
+Mientras mas animales capture ire a acomulando puntos y experiencias para poder canjear el mercado
+
+---
+
