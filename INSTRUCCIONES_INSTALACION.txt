@@ -9,12 +9,33 @@ Requisitos:
 - pip (instalador de paquetes de Python)
 
 ================================================================================
-PASO 1: INSTALAR DEPENDENCIAS
+PASO 1: ACTIVAR ENTORNO VIRTUAL
 ================================================================================
 
 1. Abre una terminal en la carpeta del proyecto
 
-2. Instala las dependencias del proyecto:
+2. Activa el entorno virtual:
+
+   En Windows:
+   activar_entorno.bat
+   
+   O manualmente:
+   venv\Scripts\activate
+   
+   En Linux/Mac:
+   source venv/bin/activate
+   
+   O manualmente:
+   . venv/bin/activate
+
+3. Cuando veas (venv) al inicio de tu línea de comando, significa que el 
+   entorno virtual está activado
+
+================================================================================
+PASO 2: INSTALAR DEPENDENCIAS
+================================================================================
+
+1. Con el entorno virtual activado, instala las dependencias:
    
    pip install -r requirements.txt
 
@@ -23,7 +44,7 @@ PASO 1: INSTALAR DEPENDENCIAS
    pip install Django==4.2.7
 
 ================================================================================
-PASO 2: MIGRAR LA BASE DE DATOS
+PASO 3: MIGRAR LA BASE DE DATOS
 ================================================================================
 
 1. Ejecuta las migraciones para crear las tablas en la base de datos:
@@ -34,7 +55,7 @@ PASO 2: MIGRAR LA BASE DE DATOS
 2. Esto creará el archivo db.sqlite3 con todas las tablas necesarias.
 
 ================================================================================
-PASO 3: CREAR SUPERUSUARIO (OPCIONAL)
+PASO 4: CREAR SUPERUSUARIO (OPCIONAL)
 ================================================================================
 
 Para acceder al panel de administración de Django:
@@ -46,7 +67,7 @@ Esto te pedirá crear un usuario y contraseña para el admin.
 El panel de administración estará en: http://127.0.0.1:8000/admin/
 
 ================================================================================
-PASO 4: INICIALIZAR ANIMALES
+PASO 5: INICIALIZAR ANIMALES
 ================================================================================
 
 Los animales se inicializan automáticamente la primera vez que un usuario

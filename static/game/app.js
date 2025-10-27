@@ -1,6 +1,21 @@
 // Datos del juego
 let sesionActiva = false;
 let animalesDB = [];
+let mapa = null;
+
+// Hábitats reales de los animales (latitud, longitud)
+const habitatsAnimales = {
+    'León': [0.5, 36],      // Kenia
+    'Elefante': [-3, 38],    // África central
+    'Tigre': [27, 84],       // Nepal
+    'Jirafa': [-2, 35],      // Tanzania
+    'Oso': [65, 180],        // Alaska
+    'Mono': [-1, 118],       // Borneo
+    'Cebra': [-2, 35],       // Tanzania
+    'Hipopótamo': [-1, 30],  // Uganda
+    'Panda': [31, 104],      // China
+    'Lobo': [65, -155]       // Canadá
+};
 
 // Items del mercado
 const itemsMercado = [
@@ -28,10 +43,22 @@ function getCookie(name) {
 
 const csrftoken = getCookie('csrftoken');
 
-// Cargar estadísticas al iniciar
+// Inicializar mapa al cargar
 document.addEventListener('DOMContentLoaded', () => {
+    inicializarMapa();
     cargarEstadisticas();
 });
+
+// Inicializar mapa Leaflet
+function inicializarMapa() {
+    mapa = L.map('mapa').setView([20, 0], 2);
+    
+    // Agregar capa de tiles de OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 18
+    }).addTo(mapa);
+}
 
 // Cargar estadísticas del servidor
 function cargarEstadisticas() {
@@ -82,130 +109,121 @@ function iniciarSesion() {
     }
 }
 
-// Generar animal aleatorio
+// Generar animal aleatorio en el mapa
 function generarAnimal() {
     if (!sesionActiva) return;
 
-    const mapa = document.getElementById('mapa');
+    // Simular generación de animal aleatorio
+    const animales = ['León', 'Elefante', 'Tigre', 'Jirafa', 'Oso', 'Mono', 'Cebra', 'Hipopótamo', 'Panda', 'Lobo'];
+    const emojis = ['🦁', '🐘', '🐅', '🦒', '🐻', '🐵', '🦓', '🦛', '🐼', '🐺'];
     
-    // Simular generación de animal aleatorio (en producción vendría del servidor)
-    const animalEmojis = ['🦁', '🐘', '🐅', '🦒', '🐻', '🐵', '🦓', '🦛', '🐼', '🐺'];
-    const nombres = ['León', 'Elefante', 'Tigre', 'Jirafa', 'Oso', 'Mono', 'Cebra', 'Hipopótamo', 'Panda', 'Lobo'];
+    const randomIndex = Math.floor(Math.random() * animales.length);
+    const nombreAnimal = animales[randomIndex];
+    const emojiAnimal = emojis[randomIndex];
     
-    const randomIndex = Math.floor(Math.random() * animalEmojis.length);
+    // Obtener la posición del hábitat del animal
+    const posicionHabitat = habitatsAnimales[nombreAnimal];
     
-    const animalElement = document.createElement('div');
-    animalElement.className = 'animal fade-in';
-    animalElement.innerHTML = `
-        <div class="text-6xl text-center">
-            ${animalEmojis[randomIndex]}
+    // Crear marcador en el mapa
+    const marker = L.marker(posicionHabitat).addTo(mapa);
+    
+    // Agregar popup con el emoji
+    marker.bindPopup(`
+        <div style="text-align: center; font-size: 48px;">
+            ${emojiAnimal}
+            <br>
+            <strong>${nombreAnimal}</strong>
+            <br>
+            <button onclick="capturarAnimalMapa('${nombreAnimal}', ${posicionHabitat[0]}, ${posicionHabitat[1]}, '${emojiAnimal}')" 
+                    style="background: #16a34a; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                🎯 Capturar
+            </button>
         </div>
-    `;
+    `);
     
-    // Guardar información del animal
-    animalElement.dataset.nombre = nombres[randomIndex];
-    animalElement.dataset.emoji = animalEmojis[randomIndex];
+    // Abrir popup automáticamente
+    marker.openPopup();
     
-    // Posición aleatoria
-    const maxX = mapa.offsetWidth - 80;
-    const maxY = mapa.offsetHeight - 80;
-    const x = Math.random() * maxX;
-    const y = Math.random() * maxY;
+    // Guardar información en el marcador
+    marker.nombreAnimal = nombreAnimal;
+    marker.emojiAnimal = emojiAnimal;
+    marker.indice = randomIndex;
     
-    animalElement.style.left = x + 'px';
-    animalElement.style.top = y + 'px';
-    animalElement.style.position = 'absolute';
-    
-    // Agregar evento de clic
-    animalElement.addEventListener('click', () => capturarAnimal(animalElement));
-    
-    mapa.appendChild(animalElement);
-    
-    // Remover después de un tiempo si no se captura
+    // Remover después de 5 segundos si no se captura
     setTimeout(() => {
-        if (animalElement.parentNode) {
-            animalElement.style.opacity = '0';
-            animalElement.style.transition = 'opacity 0.5s';
-            setTimeout(() => animalElement.remove(), 500);
-        }
-    }, 3000);
+        mapa.removeLayer(marker);
+    }, 5000);
     
     // Generar siguiente animal
-    setTimeout(() => generarAnimal(), 2000);
+    setTimeout(() => generarAnimal(), 3000);
 }
 
-// Capturar animal
-function capturarAnimal(elemento) {
-    // Obtener información del animal
-    const nombreAnimal = elemento.dataset.nombre;
-    const emojiAnimal = elemento.dataset.emoji;
+// Capturar animal desde el mapa
+function capturarAnimalMapa(nombreAnimal, lat, lon, emojiAnimal) {
+    // Buscar el ID del animal en la base de datos
+    // Por ahora usamos el índice aleatorio + 1
+    const animales = ['León', 'Elefante', 'Tigre', 'Jirafa', 'Oso', 'Mono', 'Cebra', 'Hipopótamo', 'Panda', 'Lobo'];
+    const animalId = animales.indexOf(nombreAnimal) + 1;
     
-    // Buscar el ID del animal (por nombre)
-    fetch('/api/estadisticas/')
-        .then(response => response.json())
-        .then(data => {
-            // Simular captura con animal aleatorio
-            const animalId = Math.floor(Math.random() * 10) + 1;
+    // Enviar al servidor
+    fetch('/api/capturar/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify({
+            animal_id: animalId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Sonido de captura (visual)
+            mostrarEfectoMapa(+lat, +lon, data.animal.puntos);
             
-            // Enviar al servidor
-            fetch('/api/capturar/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken
-                },
-                body: JSON.stringify({
-                    animal_id: animalId
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    elemento.classList.add('animal-capturado');
-                    
-                    // Sonido de captura (visual)
-                    mostrarEfectoPuntos(data.animal.puntos, elemento);
-                    
-                    // Actualizar UI
-                    document.getElementById('puntos').textContent = data.puntos;
-                    document.getElementById('experiencia').textContent = data.experiencia;
-                    document.getElementById('nivel').textContent = `Nivel ${data.nivel}`;
-                    
-                    const barraExp = ((data.experiencia / (data.nivel * 100)) * 100);
-                    document.getElementById('barra-experiencia').style.width = barraExp + '%';
-                    
-                    if (data.nivel_subido) {
-                        alert(`🎉 ¡Subiste de nivel! Ahora eres nivel ${data.nivel}`);
-                    }
-                    
-                    // Mostrar información del animal
-                    mostrarInfoAnimal(data.animal);
-                    
-                    // Recargar estadísticas
-                    cargarEstadisticas();
-                    
-                    // Remover elemento
-                    setTimeout(() => elemento.remove(), 500);
+            // Actualizar UI
+            document.getElementById('puntos').textContent = data.puntos;
+            document.getElementById('experiencia').textContent = data.experiencia;
+            document.getElementById('nivel').textContent = `Nivel ${data.nivel}`;
+            
+            const barraExp = ((data.experiencia / (data.nivel * 100)) * 100);
+            document.getElementById('barra-experiencia').style.width = barraExp + '%';
+            
+            if (data.nivel_subido) {
+                alert(`🎉 ¡Subiste de nivel! Ahora eres nivel ${data.nivel}`);
+            }
+            
+            // Mostrar información del animal
+            mostrarInfoAnimal(data.animal);
+            
+            // Recargar estadísticas
+            cargarEstadisticas();
+            
+            // Remover todos los marcadores actuales
+            mapa.eachLayer(layer => {
+                if (layer instanceof L.Marker) {
+                    mapa.removeLayer(layer);
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error al capturar el animal');
             });
-        });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al capturar el animal');
+    });
 }
 
-// Mostrar efecto de puntos
-function mostrarEfectoPuntos(valor, elemento) {
-    const efecto = document.createElement('div');
-    efecto.className = 'efecto-puntos';
-    efecto.textContent = `+${valor} puntos!`;
-    efecto.style.left = elemento.style.left;
-    efecto.style.top = elemento.style.top;
+// Mostrar efecto de puntos en el mapa
+function mostrarEfectoMapa(lat, lon, valor) {
+    const efecto = L.popup()
+        .setLatLng([lat, lon])
+        .setContent(`<div style="font-size: 24px; font-weight: bold; color: #16a34a; text-align: center;">+${valor} puntos! 🎉</div>`)
+        .openOn(mapa);
     
-    document.getElementById('mapa').appendChild(efecto);
-    
-    setTimeout(() => efecto.remove(), 1000);
+    setTimeout(() => {
+        mapa.closePopup();
+    }, 2000);
 }
 
 // Mostrar información del animal
