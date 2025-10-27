@@ -1,0 +1,171 @@
+================================================================================
+         CAZADOR DE ANIMALES - INSTRUCCIONES DE INSTALACIÓN
+================================================================================
+
+PROYECTO DJANGO CON AUTENTICACIÓN Y GAME DE CAPTURA DE ANIMALES
+
+Requisitos:
+- Python 3.8 o superior
+- pip (instalador de paquetes de Python)
+
+================================================================================
+PASO 1: ACTIVAR ENTORNO VIRTUAL
+================================================================================
+
+1. Abre una terminal en la carpeta del proyecto
+
+2. Activa el entorno virtual:
+
+   En Windows:
+   activar_entorno.bat
+   
+   O manualmente:
+   venv\Scripts\activate
+   
+   En Linux/Mac:
+   source venv/bin/activate
+   
+   O manualmente:
+   . venv/bin/activate
+
+3. Cuando veas (venv) al inicio de tu línea de comando, significa que el 
+   entorno virtual está activado
+
+================================================================================
+PASO 2: INSTALAR DEPENDENCIAS
+================================================================================
+
+1. Con el entorno virtual activado, instala las dependencias:
+   
+   pip install -r requirements.txt
+
+   O si tienes problemas, instala Django directamente:
+   
+   pip install Django==4.2.7
+
+================================================================================
+PASO 3: MIGRAR LA BASE DE DATOS
+================================================================================
+
+1. Ejecuta las migraciones para crear las tablas en la base de datos:
+   
+   python manage.py makemigrations
+   python manage.py migrate
+
+2. Esto creará el archivo db.sqlite3 con todas las tablas necesarias.
+
+================================================================================
+PASO 4: CREAR SUPERUSUARIO (OPCIONAL)
+================================================================================
+
+Para acceder al panel de administración de Django:
+
+   python manage.py createsuperuser
+
+Esto te pedirá crear un usuario y contraseña para el admin.
+
+El panel de administración estará en: http://127.0.0.1:8000/admin/
+
+================================================================================
+PASO 5: INICIALIZAR ANIMALES
+================================================================================
+
+Los animales se inicializan automáticamente la primera vez que un usuario
+accede al juego. Si quieres inicializarlos manualmente, abre el shell de Django:
+
+   python manage.py shell
+
+Y luego ejecuta:
+   from game.views import inicializar_animales
+   inicializar_animales()
+
+================================================================================
+PASO 5: EJECUTAR EL SERVIDOR
+================================================================================
+
+1. Ejecuta el servidor de desarrollo:
+   
+   python manage.py runserver
+
+2. El servidor se ejecutará en: http://127.0.0.1:8000/
+
+3. Abre tu navegador y ve a esa dirección
+
+================================================================================
+PASO 6: JUGAR
+================================================================================
+
+1. Verás la pantalla de login
+2. Si no tienes cuenta, haz clic en "Regístrate aquí"
+3. Crea tu cuenta con un usuario y contraseña
+4. Una vez dentro, podrás:
+   - Buscar animales
+   - Capturarlos haciendo clic
+   - Acumular puntos y experiencia
+   - Subir de nivel
+   - Visitar el mercado
+
+================================================================================
+CARACTERÍSTICAS DEL PROYECTO
+================================================================================
+
+✓ Sistema de autenticación (login/registro)
+✓ Base de datos SQLite
+✓ Modelos: PlayerProfile, Animal, AnimalCapturado, Compra
+✓ APIs para captura, estadísticas y compras
+✓ Progreso guardado automáticamente
+✓ 10 animales diferentes con información educativa
+✓ Sistema de puntos, experiencia y niveles
+✓ Mercado con items para comprar
+
+================================================================================
+ESTRUCTURA DE ARCHIVOS
+================================================================================
+
+cazador_animales/          # Carpeta del proyecto Django
+  - __init__.py
+  - asgi.py
+  - settings.py
+  - urls.py
+  - wsgi.py
+
+game/                      # Aplicación del juego
+  - models.py              # Modelos de datos
+  - views.py               # Vistas y lógica
+  - urls.py                # URLs de la app
+  - admin.py              # Configuración admin
+  - apps.py               # Configuración de la app
+  - signals.py            # Señales para crear perfiles
+  - templates/game/       # Plantillas HTML
+    - base.html
+    - login.html
+    - register.html
+    - index.html
+
+static/game/              # Archivos estáticos
+  - styles.css
+  - app.js
+
+manage.py                  # Script de gestión
+requirements.txt           # Dependencias
+
+================================================================================
+SOLUCIÓN DE PROBLEMAS
+================================================================================
+
+Problema: "No module named 'django'"
+Solución: Instala Django con: pip install -r requirements.txt
+
+Problema: "No migrations to apply"
+Solución: Ejecuta: python manage.py makemigrations game
+
+Problema: "Static files not found"
+Solución: Asegúrate de que el archivo settings.py tiene STATICFILES_DIRS configurado
+
+Problema: "CSRF verification failed"
+Solución: Agrega {% csrf_token %} en los formularios
+
+================================================================================
+¡DISFRUTA LA AVENTURA! 🦁🐘🐅
+================================================================================
+
