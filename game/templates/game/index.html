@@ -1,0 +1,98 @@
+{% extends 'game/base.html' %}
+
+{% block title %}Jugar - Cazador de Animales{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<header class="bg-green-800 text-white p-4 shadow-lg">
+    <div class="container mx-auto flex justify-between items-center">
+        <h1 class="text-2xl font-bold">🦁 Cazador de Animales</h1>
+        <div class="flex gap-4 items-center">
+            <span class="text-lg">👤 {{ user.username }}</span>
+            <div class="bg-white text-green-800 px-4 py-2 rounded-lg shadow-md">
+                <span class="font-bold">💰 Puntos: <span id="puntos">{{ profile.puntos }}</span></span>
+            </div>
+            <div class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md">
+                <span class="font-bold">⭐ XP: <span id="experiencia">{{ profile.experiencia }}</span></span>
+            </div>
+            <a href="{% url 'logout' %}" class="bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 transition">Cerrar Sesión</a>
+        </div>
+    </div>
+</header>
+
+<!-- Main Container -->
+<div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Sidebar -->
+        <aside class="w-full lg:w-64 bg-white rounded-lg shadow-xl p-6">
+            <h2 class="text-xl font-bold mb-4 text-gray-800">📊 Estadísticas</h2>
+            
+            <div class="mb-6">
+                <h3 class="font-semibold text-gray-700 mb-2">Animales Capturados</h3>
+                <div id="animales-capturados" class="space-y-2">
+                    <p class="text-gray-600">Cargando...</p>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="font-semibold text-gray-700 mb-2">Nivel</h3>
+                <div class="bg-gray-200 rounded-full h-4">
+                    <div id="barra-experiencia" class="bg-blue-500 h-4 rounded-full" style="width: 0%"></div>
+                </div>
+                <p id="nivel" class="text-sm text-gray-600 mt-1">Nivel {{ profile.nivel }}</p>
+            </div>
+
+            <button onclick="abrirMercado()" class="w-full bg-purple-600 text-white py-3 rounded-lg font-bold hover:bg-purple-700 transition mb-2">
+                🛒 Ver Mercado
+            </button>
+
+            <button onclick="mostrarAyuda()" class="w-full bg-yellow-500 text-gray-800 py-3 rounded-lg font-bold hover:bg-yellow-600 transition">
+                ❓ Ayuda
+            </button>
+        </aside>
+
+        <!-- Mapa Principal -->
+        <main class="flex-1 bg-white rounded-lg shadow-xl p-6">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">🗺️ Mapa de Búsqueda</h2>
+            <p class="text-gray-600 mb-4">Haz clic en los animales para capturarlos</p>
+            
+            <div id="mapa" class="relative bg-green-100 border-4 border-green-800 rounded-lg" style="min-height: 500px; position: relative; overflow: hidden;">
+                <!-- Los animales aparecerán aquí -->
+            </div>
+
+            <button id="btn-iniciar" onclick="iniciarSesion()" class="mt-4 bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition">
+                🚀 Buscar Animales
+            </button>
+        </main>
+    </div>
+</div>
+
+<!-- Modal de Información del Animal -->
+<div id="modal-animal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-8 max-w-md m-4">
+        <div id="contenido-modal" class="text-center">
+            <!-- Contenido dinámico -->
+        </div>
+        <button onclick="cerrarModal()" class="mt-4 w-full bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700">
+            Cerrar
+        </button>
+    </div>
+</div>
+
+<!-- Modal de Mercado -->
+<div id="modal-mercado" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-8 max-w-2xl m-4 max-h-[90vh] overflow-y-auto">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">🛒 Mercado</h2>
+        <div id="items-mercado" class="grid grid-cols-2 gap-4">
+            <!-- Items del mercado -->
+        </div>
+        <button onclick="cerrarMercado()" class="mt-4 w-full bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700">
+            Cerrar
+        </button>
+    </div>
+</div>
+
+{% load static %}
+<script src="{% static 'game/app.js' %}"></script>
+{% endblock %}
+
